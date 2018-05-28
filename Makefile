@@ -1,6 +1,6 @@
 ifneq ($(KERNELRELEASE),)
 	obj-m := my_driver.o
-	my_driver-objs := my_basic_module.o
+	my_driver-objs := char_driver_1.o
 else
 	KERNEL_SRC_DIR := /lib/modules/$(shell uname -r)/build
 all:
