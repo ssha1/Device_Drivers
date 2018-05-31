@@ -1,3 +1,4 @@
+MODULE_FORCE_UNLOAD := yes
 ifneq ($(KERNELRELEASE),)
 	obj-m := my_driver.o
 	my_driver-objs := char_driver_1.o

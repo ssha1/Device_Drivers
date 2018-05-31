@@ -1,10 +1,12 @@
 #include<stdio.h>
+#include<stdlib.h>
 #include<sys/types.h>
 #include<unistd.h>
 #include<sys/ioctl.h>
 #include<string.h>
 #include<fcntl.h>
 #include"my_ioctl.h"
+#include<sys/mman.h>
 
 #define BUFFER_LENGTH 256
 
@@ -19,28 +21,31 @@ int main()
 	int fd;
 	int option;
        	static char device_data[BUFFER_LENGTH];
-	char* user_data = "User data";
+	char user_data[256];
 	int ret;
+        static char * ch = "hello";
 	fd = open(file_name,O_RDWR);
 	if(fd < 0)
 	{
 		printf("Cant open file \n");
 		return 0;
 	}
-	printf("Choose 1 to read device , 2 to write device , 3 for ioctl commands \n");
+	printf("Choose 1 to read device , 2 to write device , 3 for ioctl commands, 4 for mmap read, 5 for mmap write \n");
 	scanf("%d",&option);
 	switch(option)
 	{
 		case 1:
 		{
 			ret = read(fd,device_data,BUFFER_LENGTH);
-			printf("Recieve message: %s containing %d characters \n",device_data,((int)strlen(device_data)));
+			printf("Recieved message from device: %s \n",device_data);
 			break;
 		}
 		case 2:
 		{
+			printf("Enter the string to send:");
+			scanf("%s",user_data);
 			ret = write(fd,user_data,strlen(user_data));
-			printf("sent %d characters \n",ret);
+			printf("sent %d characters \n",(int)strlen(user_data));
 			break;
 		}
 		case 3:
@@ -48,7 +53,32 @@ int main()
 			ioctl_execute(fd);
 			break;
 		}
+		case 4:
+		{
+			ch = mmap(0 , 4096 , PROT_READ , MAP_SHARED , fd , 0);
+			if(ch == MAP_FAILED)
+			{
+			//	perror("mmap");
+				printf("map failed");
+			}
+
+			printf("%s \n",ch);
+			msync(ch , 4096, MS_SYNC);
+			munmap(0 , 4096);
+			break;
+		}
+		case 5:
+		{
+			ch =mmap(0 , 4096 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
+			ch[0] = 'h';
+			printf("%s \n",ch);
+			msync(ch , 4096, MS_SYNC);			
+			munmap(0 , 4096);
+			break;
+
+		}
 	}
+	close(fd);
 	return 0;	
 }
 
@@ -96,7 +126,7 @@ void write_var(int fd)
 	darg.power = var;
 	printf("Enter Speed : ");
 	scanf("%d",&var);
-	darg.power = var;
+	darg.speed = var;
 	if(ioctl(fd,SET_VARIABLES,&darg)==-1)
 	{
 		perror("ioctl set variable call failed");
