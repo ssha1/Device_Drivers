@@ -15,6 +15,27 @@ void read_var(int);
 void write_var(int);
 void clear_var(int);
 
+/*void createFile(char *string)
+{
+        FILE *fp = fopen("/dev/mynull", "w");
+        fprintf(fp, "%s", string);
+        fclose(fp);
+}
+
+void printFile()
+{
+        FILE *fp = fopen("/dev/mynull", "r");
+        char buf[100];
+        if(fgets(buf, 100, fp) == NULL)
+        {
+                fprintf(stderr, "fgets() error\n");
+                exit(EXIT_FAILURE);
+        }
+        printf("file actually contains contains: %s\n", buf);
+        fclose(fp);
+}*/
+
+
 int main()
 {
 	char* file_name = "/dev/mynull";
@@ -23,7 +44,8 @@ int main()
        	static char device_data[BUFFER_LENGTH];
 	char user_data[256];
 	int ret;
-        static char * ch = "hello";
+        static char * ch = "";
+//	createFile("Content of fiel");
 	fd = open(file_name,O_RDWR);
 	if(fd < 0)
 	{
@@ -55,7 +77,7 @@ int main()
 		}
 		case 4:
 		{
-			ch = mmap(0 , 4096 , PROT_READ , MAP_SHARED , fd , 0);
+			ch = mmap(0 , 8192 , PROT_READ , MAP_SHARED , fd , 0);
 			if(ch == MAP_FAILED)
 			{
 			//	perror("mmap");
@@ -63,17 +85,18 @@ int main()
 			}
 
 			printf("%s \n",ch);
-			msync(ch , 4096, MS_SYNC);
-			munmap(0 , 4096);
+			msync(ch , 8192, MS_SYNC);
+			munmap(0 , 8192);
 			break;
 		}
 		case 5:
 		{
-			ch =mmap(0 , 4096 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
-			ch[0] = 'h';
+			ch =mmap(0 , 8192 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
+			printf("Enter the string to enter:");
+			scanf("%s",ch);
 			printf("%s \n",ch);
-			msync(ch , 4096, MS_SYNC);			
-			munmap(0 , 4096);
+			msync(ch , 8192, MS_SYNC);			
+			munmap(0 , 8192);
 			break;
 
 		}
