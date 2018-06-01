@@ -1,0 +1,43 @@
+BUFFER_LENGTH	main_file.c	11
+CLR_VARIABLES	my_ioctl.h	11
+ELF	char_driver_1.o	1
+ELF	my_driver.ko	1
+ELF	my_driver.o	1
+GET_VARIABLES	my_ioctl.h	9
+MAX_SIZE	char_driver_1.c	12
+MODULE_FORCE_UNLOAD	Makefile	/^MODULE_FORCE_UNLOAD := yes$/
+Mmain_file	main_file.c	/^int main()$/
+SET_VARIABLES	my_ioctl.h	10
+__this_module	my_driver.mod.c	7
+__used	my_driver.mod.c	18
+__used	my_driver.mod.c	42
+all	Makefile	/^all:$/
+cdev	char_driver_1.c	36
+char_dev_exit	char_driver_1.c	/^static void __exit char_dev_exit(void)$/
+char_dev_init	char_driver_1.c	/^static int __init char_dev_init(void)$/
+clean	Makefile	/^clean:$/
+clear_var	main_file.c	/^void clear_var(int fd)$/
+dev	char_driver_1.c	35
+device_arg	my_ioctl.h	7
+device_close	char_driver_1.c	/^static int device_close(struct inode* inodep,struc/
+device_ioctl	char_driver_1.c	/^static int device_ioctl(struct file* filep,unsigne/
+device_mmap	char_driver_1.c	/^int device_mmap(struct file* filep , struct vm_are/
+device_name	char_driver_1.c	34
+device_open	char_driver_1.c	/^static int  device_open(struct inode* inodep,struc/
+device_read	char_driver_1.c	/^static ssize_t device_read(struct file* filep,char/
+device_write	char_driver_1.c	/^static ssize_t device_write(struct file* filep, co/
+fops	char_driver_1.c	25
+ioctl_execute	main_file.c	/^void ioctl_execute(int fd)$/
+kdata	char_driver_1.c	90
+load	Makefile	/^load:$/
+mmap_data	char_driver_1.c	38
+mmap_device_read	char_driver_1.c	/^static ssize_t mmap_device_read(struct file* filep/
+mmap_device_write	char_driver_1.c	/^static ssize_t mmap_device_write(struct file* file/
+my_exit	my_basic_module.c	/^static void __exit my_exit(void)$/
+my_init	my_basic_module.c	/^static int __init my_init(void)$/
+power	my_ioctl.h	6
+read_var	main_file.c	/^void read_var(int fd)$/
+speed	my_ioctl.h	5
+unload	Makefile	/^unload:$/
+witch	refernce	/^witch (cmd)$/
+write_var	main_file.c	/^void write_var(int fd)$/

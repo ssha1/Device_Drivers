@@ -44,7 +44,9 @@ int main()
        	static char device_data[BUFFER_LENGTH];
 	char user_data[256];
 	int ret;
-        static char * ch = "";
+	int ret_m = 0;
+        static char *ch;
+	unsigned long int i;
 //	createFile("Content of fiel");
 	fd = open(file_name,O_RDWR);
 	if(fd < 0)
@@ -52,14 +54,27 @@ int main()
 		printf("Cant open file \n");
 		return 0;
 	}
+	ch = mmap(0 , 800 , PROT_READ | PROT_WRITE, MAP_SHARED , fd , 0);
+	int k;
+	for (k=0; k<800; k++)
+		ch[k] = '0';
+	i = (unsigned long int)ch;
+	if(ch == MAP_FAILED)
+	{
+		printf("map failed \n");
+	}
+	printf("PID : %d \n",getpid());
+	printf("mmap address : %lx \n",i);
+	while(1){
 	printf("Choose 1 to read device , 2 to write device , 3 for ioctl commands, 4 for mmap read, 5 for mmap write \n");
 	scanf("%d",&option);
 	switch(option)
 	{
 		case 1:
 		{
-			ret = read(fd,device_data,BUFFER_LENGTH);
+			ret = read(fd,device_data,strlen(device_data));
 			printf("Recieved message from device: %s \n",device_data);
+			printf("%d \n",ret);
 			break;
 		}
 		case 2:
@@ -77,7 +92,7 @@ int main()
 		}
 		case 4:
 		{
-			ch = mmap(0 , 8192 , PROT_READ , MAP_SHARED , fd , 0);
+//			ch = mmap(0 , 8192 , PROT_READ , MAP_SHARED , fd , 0);
 			if(ch == MAP_FAILED)
 			{
 			//	perror("mmap");
@@ -85,22 +100,32 @@ int main()
 			}
 
 			printf("%s \n",ch);
-			msync(ch , 8192, MS_SYNC);
-			munmap(0 , 8192);
+//			ret_m = read(fd , ch , strlen(ch));printf("%d \n",ret_m);
+			msync(ch , 800 , MS_SYNC);
+//			munmap(0 , 8192);
 			break;
 		}
 		case 5:
 		{
-			ch =mmap(0 , 8192 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
-			printf("Enter the string to enter:");
-			scanf("%s",ch);
+//			ch =mmap(0 , 8192 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
+			ch = "Hi\0";
+			//printf("Enter the string to enter:");
+			//scanf("%s",ch);
+//			ret_m = write(fd , ch , strlen(ch));printf("%d \n",ret_m);
 			printf("%s \n",ch);
-			msync(ch , 8192, MS_SYNC);			
-			munmap(0 , 8192);
+			msync(ch , 800, MS_SYNC);			
+//			munmap(0 , 8192);
 			break;
 
 		}
-	}
+		case 6:
+		{
+			munmap(0 , 800);
+			close(fd);
+			exit(0);
+		}
+	}}
+	munmap(0 ,800);
 	close(fd);
 	return 0;	
 }
