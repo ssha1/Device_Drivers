@@ -26,8 +26,8 @@ static struct file_operations fops =
 {
 	.open = device_open,
 	.release = device_close,
-	.read = mmap_device_read,
-	.write = mmap_device_write,
+	.read = device_read,
+	.write = device_write,
 	.unlocked_ioctl = device_ioctl,
 	.mmap = device_mmap
 };
@@ -91,23 +91,25 @@ static char kdata[256];
 
 static ssize_t mmap_device_read(struct file* filep,char __user* data,size_t count,loff_t* offset)
 {
-	unsigned long data_read;
+//	unsigned long data_read;
 //	char* device_data = "Device read data";	
-	data_read = copy_to_user(data,mmap_data,strlen(mmap_data));
-	if(data_read){
-		return -EFAULT;
-	}
+//	data_read = copy_to_user(data,mmap_data,strlen(mmap_data));
+	data = mmap_data;
+//	if(data_read){
+//		return -EFAULT;
+//	}
 	return count;
 
 }
 
 static ssize_t mmap_device_write(struct file* filep, const char __user* user_data, size_t count, loff_t* offset)
 {
-	unsigned long data_wrote;
-	data_wrote = copy_from_user(mmap_data, user_data, count);
-	if(data_wrote){
-		return -EFAULT;
-	}
+//	unsigned long data_wrote;
+//	data_wrote = copy_from_user(mmap_data, user_data, count);
+//	if(data_wrote){
+//		return -EFAULT;
+//	}
+	mmap_data = "HI this is written by the device";
 	mmap_data[count]='\0';
 	return count;
 	
@@ -127,10 +129,10 @@ static ssize_t device_read(struct file* filep,char __user* data,size_t count,lof
 static ssize_t device_write(struct file* filep, const char __user* user_data, size_t count, loff_t* offset)
 {
 	unsigned long data_wrote;
-	data_wrote = copy_from_user(kdata, user_data, count);
+	data_wrote = copy_from_user(mmap_data, user_data, strlen(user_data));
 	if(data_wrote)
 		return -EFAULT;
-	kdata[count]='\0';
+	mmap_data[count]='\0';
 	return count;
 }
 

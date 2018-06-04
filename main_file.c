@@ -15,27 +15,6 @@ void read_var(int);
 void write_var(int);
 void clear_var(int);
 
-/*void createFile(char *string)
-{
-        FILE *fp = fopen("/dev/mynull", "w");
-        fprintf(fp, "%s", string);
-        fclose(fp);
-}
-
-void printFile()
-{
-        FILE *fp = fopen("/dev/mynull", "r");
-        char buf[100];
-        if(fgets(buf, 100, fp) == NULL)
-        {
-                fprintf(stderr, "fgets() error\n");
-                exit(EXIT_FAILURE);
-        }
-        printf("file actually contains contains: %s\n", buf);
-        fclose(fp);
-}*/
-
-
 int main()
 {
 	char* file_name = "/dev/mynull";
@@ -44,27 +23,31 @@ int main()
        	static char device_data[BUFFER_LENGTH];
 	char user_data[256];
 	int ret;
-	int ret_m = 0;
         static char *ch;
-	unsigned long int i;
-//	createFile("Content of fiel");
+	unsigned long int mmaped_address;
+	int childpid;
+
 	fd = open(file_name,O_RDWR);
 	if(fd < 0)
 	{
 		printf("Cant open file \n");
 		return 0;
 	}
+
 	ch = mmap(0 , 800 , PROT_READ | PROT_WRITE, MAP_SHARED , fd , 0);
-	int k;
-	for (k=0; k<800; k++)
+/*	for (int k=0; k<800; k++)
 		ch[k] = '0';
-	i = (unsigned long int)ch;
+*/
 	if(ch == MAP_FAILED)
 	{
 		printf("map failed \n");
 	}
+	else
+	{
+	mmaped_address = (unsigned long int)ch;
+	printf("mmap address : %lx \n",mmaped_address);
+	}
 	printf("PID : %d \n",getpid());
-	printf("mmap address : %lx \n",i);
 	while(1){
 	printf("Choose 1 to read device , 2 to write device , 3 for ioctl commands, 4 for mmap read, 5 for mmap write \n");
 	scanf("%d",&option);
@@ -74,7 +57,7 @@ int main()
 		{
 			ret = read(fd,device_data,strlen(device_data));
 			printf("Recieved message from device: %s \n",device_data);
-			printf("%d \n",ret);
+		//	printf("%d \n",ret);
 			break;
 		}
 		case 2:
@@ -91,32 +74,18 @@ int main()
 			break;
 		}
 		case 4:
-		{
-//			ch = mmap(0 , 8192 , PROT_READ , MAP_SHARED , fd , 0);
-			if(ch == MAP_FAILED)
-			{
-			//	perror("mmap");
-				printf("map failed");
-			}
-
+		{		
 			printf("%s \n",ch);
-//			ret_m = read(fd , ch , strlen(ch));printf("%d \n",ret_m);
 			msync(ch , 800 , MS_SYNC);
-//			munmap(0 , 8192);
 			break;
 		}
 		case 5:
 		{
-//			ch =mmap(0 , 8192 , PROT_WRITE | PROT_READ | PROT_EXEC , MAP_SHARED , fd , 0);
-			ch = "Hi\0";
-			//printf("Enter the string to enter:");
-			//scanf("%s",ch);
-//			ret_m = write(fd , ch , strlen(ch));printf("%d \n",ret_m);
+			printf("Enter the string to enter:");
+			scanf("%s",ch);
 			printf("%s \n",ch);
 			msync(ch , 800, MS_SYNC);			
-//			munmap(0 , 8192);
 			break;
-
 		}
 		case 6:
 		{
